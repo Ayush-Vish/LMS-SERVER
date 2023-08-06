@@ -66,6 +66,10 @@ UserSchema.pre('save' , async function (next) {
     return next()
 })
 UserSchema.methods = {
+    comparePassword(newPassword){
+        newPassword = bycrypt.hash(newPassword ,10) 
+        return this.password === newPassword     
+    },
     generateJWTTokens(){
          return JWT.sign(
             {id:this._id,email:this.email},

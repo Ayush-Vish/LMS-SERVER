@@ -1,4 +1,4 @@
-import express from 'express' 
+import express, { urlencoded } from 'express' 
 import cors from 'cors'
 import bycryptjs from 'bcryptjs'
 import cookieParser from 'cookie-parser'
@@ -8,8 +8,17 @@ import morgan from 'morgan'
 import errorMiddleware from './middleware/error.middleware.js'
 const app = express()
 dotenv.config()
+
+
+
 app.use(morgan('dev'))
 app.use(express.json())
+// The encoded url we get it helps us to get the Query params or to parse the encoded  url 
+
+app.use(urlencoded({
+    extended:true
+}))
+
 app.use(cors({
     origin:[process.env.FRONTEND_URL],
     credentials:true,
