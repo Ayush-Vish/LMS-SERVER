@@ -72,7 +72,7 @@ UserSchema.methods = {
     },
     generateJWTTokens(){
          return JWT.sign(
-            {id:this._id,email:this.email},
+            {id:this._id,email:this.email,suscription: this.suscription , role: this.role },
             process.env.JWT_SECRET,
             {
                 expiresIn:'24h'
