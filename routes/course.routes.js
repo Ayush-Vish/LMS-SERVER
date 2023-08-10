@@ -7,12 +7,12 @@ import authorizedRole from '../middleware/authorization.middleware.js'
 router.use(express.json())
 router.route('/')
         .get(getAllCourses)
-        .post( jwtAuth ,  upload.single("thumbnail"),createCourse)
+        .post( jwtAuth ,authorizedRole("ADMIN") ,  upload.single("thumbnail"),createCourse)
                 
 router.route('/:id')
         .get(jwtAuth ,getLecturesByCourseId)
-        .put(jwtAuth ,updateCourse)
-        .post(jwtAuth ,  upload.single("lecture") , addlectures)
-        .delete( jwtAuth,removeCourse)
+        .put(jwtAuth ,authorizedRole("ADMIN") , updateCourse)
+        .post(jwtAuth ,  authorizedRole('ADMIN') , upload.single("lecture") , addlectures)
+        .delete( jwtAuth, authorizedRole("ADMIN"),  removeCourse)
 
 export default router

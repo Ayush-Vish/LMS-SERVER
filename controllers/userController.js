@@ -15,10 +15,11 @@ const cookieOptions = {
 }
 const register = async (req,res,next) =>{
     try {
-        const {name , email, password, confirmpassword}  = req.body
+        const {name , email, password, confirmpassword ,role}  = req.body
         if(!name || !email || !password || !confirmpassword ) {
             return next(new Apperror ("All fields are required", 400));
         }
+        
         if(password !== confirmpassword  ) 
         {
             return next(new Apperror("Please Fill Password Correctly" , 400))
@@ -33,14 +34,25 @@ const register = async (req,res,next) =>{
         }
         // We Will create User in Two Steps 
         // Firstly we will make a 
+        if(!role) {
+            const user = await userModel.create({
+                name,email,password,confirmpassword,
+                avatar : {
+                    public_id:email ,
+                    secure_url : 'https://images.pexels.com/lib/avatars/grey.png?w=130&h=130&fit=crop&dpr=1'
+                }
+            })
+        }
+        else {
+            const user = await userModel.create({
+                name,email,password,confirmpassword,role:"ADMIN",
+                avatar : {
+                    public_id:email ,
+                    secure_url : 'https://images.pexels.com/lib/avatars/grey.png?w=130&h=130&fit=crop&dpr=1'
+                }
+            })
 
-        const user = await userModel.create({
-            name,email,password,confirmpassword,
-            avatar : {
-                public_id:email ,
-                secure_url : 'https://images.pexels.com/lib/avatars/grey.png?w=130&h=130&fit=crop&dpr=1'
-            }
-        })
+        }
         if(!user) {
             return next(new Apperror("User Registration failed Please try Again  " , 400) )
         }
@@ -54,7 +66,7 @@ const register = async (req,res,next) =>{
 
         // TODO: File Upload 
 
-        console.log("This is file ", JSON.stringify(req.file))
+
         if(req.file) {
    
             try {

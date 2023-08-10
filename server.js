@@ -10,4 +10,3 @@ cloudinary.v2.config({
 app.listen(PORT , () =>{
     console.log(`Server is listening on https://localhost:${PORT} `)
 })
-    

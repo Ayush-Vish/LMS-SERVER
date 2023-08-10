@@ -134,7 +134,8 @@ const addlectures =async (req , res, next) => {
             return next(new AppError("Course Does Not Exists ") ,500)
         }
         const lectureData =   {
-            title,description
+            title,description, 
+            lecture:{}
         }
         if(req.file) {
             try {
@@ -143,8 +144,9 @@ const addlectures =async (req , res, next) => {
                 })
                 if(result) {
                     let n = course.lectures.length
-                    course.lectures.lecture[n-2].public_id = result.public_id
-                    course.lectures.lecture[n-2 ].secure_url = result.secure_url
+                    lectureData.lecture.public_id = result.public_id
+                    lectureData.lecture.secure_url = result.secure_url
+
                 }
                 console.log(req.file.filename)
                 fs.rm(`uploads/${req.file.filename}`)
