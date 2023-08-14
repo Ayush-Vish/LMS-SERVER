@@ -2,7 +2,8 @@ import User from '../models/userModel.js'
 import { razorpay } from '../server.js'
 import Apperror from '../utility/error.util.js'
  import crypto from 'crypto'
-const getRazorpayKey = async (req, res ,next) =>  {
+const getRazorpayKey = async (req, res ,next) =>  {     
+
     return res.status(200).json({
         success:true, 
         message : "Razorpay API Key ",
@@ -13,26 +14,34 @@ const getRazorpayKey = async (req, res ,next) =>  {
 // This controllers will generate a subscription url  to redirect to the subscription page 
 
 const buySubscription = async (req, res ,next) =>  {
-    const {id} =req.user
-    const user = await User.findById(id)
-    if(!user) {
-        return next(new Apperror("Unauthorized , Please Login" , 400))
+
+    try {
+        const {id} =req.user
+        const user = await User.findById(id)
+        if(!user) {
+            return next(new Apperror("Unauthorized , Please Login" , 400))
+        }
+        if(user.role === "ADMIN") {
+            return next(new Apperror("Admin cannot suscribe" , 400))
+        }
+        
+        const subscription = await razorpay.subscriptions.create({
+            plan_id:process.env.RAZORPAY_PLAN_ID,
+            customer_notify :1 
+        })
+        user.subscription.id = subscription.id
+        user.subscription.status = subscription.status
+        await user.save()
+        return res.status(200).json({
+            success :true, 
+            message : "Suscribed Successfully ",
+            subscription_id  :subscription.id
+        })
+    
+    } catch (e) {
+        return next(new Apperror(e.message , 400))
     }
-    if(user.role === "ADMIN") {
-        return next(new Apperror("Admin cannot suscribe" , 400))
-    }
-    const subscription = await razorpay.subscriptions.create({
-        plan_id:process.env.RAZORPAY_PLAN_ID,
-        customer_notify :1 
-    })
-    user.subscription.id = subscription.id
-    user.subscription.status = subscription.status
-    await user.save()
-    return res.status(200).json({
-        success :true, 
-        message : "Suscribed Successfully ",
-        subscription_id  :subscription.id
-    })
+
 
 }
 const verifySubscription = async (req, res ,next) =>  {
@@ -73,9 +82,50 @@ const verifySubscription = async (req, res ,next) =>  {
     }
 }
 const cancelSubscription = async (req, res ,next) =>  {
+    try {
+        const {id} = req.user 
+        const user = await User.findById(id) 
+        if(!user ) { 
+            return next(new Apperror("User Does Not Exists ", 400)) 
+    
+        }
+        if(user.role === "ADMIN" ) {
+            return next(new Apperror("Admin is not allowed to cancel Subscription" ,400)) 
+            
+        }
+        const subscriptionid = user.subscription.id
+        // To cancel Subscription we have to Inactive the subscription 
+        // By using inbuilt function 
+    
+        const subscription = await razorpay.subscriptions.cancel(
+            subscriptionid
+        )
+    
+        user.subscription.status = subscription.staus 
+        await user.save() 
+    } catch (error) {
+        return next(new Apperror(error.message) ,400) 
+
+    }
+
+
+
 
 }
 const allPayments = async (req, res ,next) =>  {
+    const {count}  =req.query
+    const subscriptions = await razorpay.subscriptions.all({
+        count : count || 10 
+    })
+    const numberOfUserRegistered = (await User.find()).length
+    console.log(numberOfUserRegistered)
+    return res.status(200).json({
+        success:true, 
+        message : "Successfully retieved Payments", 
+        subscriptions,
+        numberOfUserRegistered : numberOfUserRegistered
+        
+    })
 
 }
 export default { 

@@ -11,7 +11,7 @@ router.route('/razorpay-key' , )
         )
 
 
-router.route('/suscribe')
+router.route('/subscribe')
         .post(jwtAuth,
             payment.buySubscription
         )

@@ -53,7 +53,10 @@ const UserSchema = new mongoose.Schema({
     },
     subscription: {
         id:String ,
-        status : String
+        status : {
+            type : String ,
+            lowercase : true 
+        }
     }
 },{
     timestamps:true

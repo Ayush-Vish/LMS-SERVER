@@ -14,7 +14,7 @@ export const razorpay = new Razorpay({
     key_secret : process.env.RAZORPAY_SECRET
     
 })
-const razorpay = new ra
+
 app.listen(PORT , () =>{
     console.log(`Server is listening on https://localhost:${PORT} `)
 })

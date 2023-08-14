@@ -19,7 +19,7 @@ const register = async (req,res,next) =>{
         if(!name || !email || !password || !confirmpassword ) {
             return next(new Apperror ("All fields are required", 400));
         }
-        
+            
         if(password !== confirmpassword  ) 
         {
             return next(new Apperror("Please Fill Password Correctly" , 400))
