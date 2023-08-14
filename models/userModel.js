@@ -51,6 +51,10 @@ const UserSchema = new mongoose.Schema({
     forgotpasswordexpirydate :{
         type:Date
     },
+    subscription: {
+        id:String ,
+        status : String
+    }
 },{
     timestamps:true
 })

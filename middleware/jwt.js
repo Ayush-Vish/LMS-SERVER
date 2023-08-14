@@ -12,7 +12,7 @@ const jwtAuth  =(req,res,next) => {
     }
     try {
         const payload =JWT.verify(token , process.env.JWT_SECRET)
-        req.user = {id:payload.id , email:payload.email, role:payload.role}
+        req.user = {id:payload.id , email:payload.email, role:payload.role , suscription:payload.suscription}
 
     } catch (error) {
         res.status(400).json({

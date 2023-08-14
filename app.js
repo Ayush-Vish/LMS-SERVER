@@ -35,6 +35,11 @@ app.use('/api/v1/user', userRoutes);
 import courseRoutes from './routes/course.routes.js'
 app.use('/api/v1/courses' , courseRoutes)
 
+// For making payments Route 
+import paymentRoutes from './routes/payment.routes.js'
+app.use('/api/v1/payment' ,paymentRoutes)
+ 
+
 // Making error middleware 
 // We are making this Middleware if any error is there Erroe Middleware will capture this 
 // This middleware is for All errors 
