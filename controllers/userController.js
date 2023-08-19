@@ -70,6 +70,7 @@ const register = async (req,res,next) =>{
         if(req.file) {
    
             try {
+                
                 const result = await cloudinary.v2.uploader.upload(req.file.path , {
                     folder:'lms',
                     width:'250',
@@ -175,7 +176,6 @@ const me = async (req,res,next) =>{
             success:true, 
             message:userFind
         })
-        
     } catch (error) {
         next(new Apperror("Unable to get User Details"))
     }
