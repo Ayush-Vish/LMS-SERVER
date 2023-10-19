@@ -1,6 +1,5 @@
 import express, { urlencoded } from 'express' 
 import cors from 'cors'
-import bycryptjs from 'bcryptjs'
 import cookieParser from 'cookie-parser'
 import connectToDB from './config/db.js'
 import dotenv from 'dotenv'
@@ -8,8 +7,6 @@ import morgan from 'morgan'
 import errorMiddleware from './middleware/error.middleware.js'
 const app = express()
 dotenv.config()
-
-
 
 app.use(morgan('dev'))
 app.use(express.json())

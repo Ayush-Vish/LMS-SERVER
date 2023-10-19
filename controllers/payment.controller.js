@@ -14,7 +14,6 @@ const getRazorpayKey = async (req, res ,next) =>  {
 // This controllers will generate a subscription url  to redirect to the subscription page 
 
 const buySubscription = async (req, res ,next) =>  {
-
     try {
         const {id} =req.user
         const user = await User.findById(id)
@@ -135,3 +134,4 @@ export default {
     cancelSubscription, 
     allPayments
 }
+

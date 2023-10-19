@@ -3,6 +3,7 @@ import Apperror from '../utility/error.util.js'
 import AppError from '../utility/error.util.js'
 import cloudinary from 'cloudinary'
 import fs from 'fs/promises'
+
 const getAllCourses = async(req ,res, next ) => {
     try {
         const courses  = await Course.find({}).select("-lectures")
@@ -35,7 +36,6 @@ const createCourse = async (req, res ,next) => {
     try {
 
         const { title, description  ,category , createdBy}  = req.body
-        console.log("gdfghdj nnvkjcv f fsdf k")
         if(!createdBy || !category || !title || !description)  {
             return next(new Apperror("All field are required" ,400))
         }
