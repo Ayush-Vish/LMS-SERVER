@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router()
 import jwtAuth from "../middleware/jwt.js";
-import {getAllCourses , getLecturesByCourseId,createCourse ,updateCourse,removeCourse , addlectures} from '../controllers/course.controller.js' 
+import {getAllCourses , getLecturesByCourseId,createCourse ,updateCourse,removeCourse , addlectures, deleteLecture} from '../controllers/course.controller.js' 
 import upload from "../middleware/multer.middleware.js";
 import authorizedRole from '../middleware/authorization.middleware.js'
 router.use(express.json())
@@ -14,5 +14,7 @@ router.route('/:id')
         .put(jwtAuth ,authorizedRole("ADMIN") , updateCourse)
         .post(jwtAuth ,  authorizedRole('ADMIN') , upload.single("lecture") , addlectures)
         .delete( jwtAuth, authorizedRole("ADMIN"),  removeCourse)
+router.route("/:cid/lecture/:lid")
+        .delete(jwtAuth , authorizedRole("ADMIN") , deleteLecture)
 
 export default router

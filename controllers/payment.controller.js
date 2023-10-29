@@ -1,4 +1,5 @@
 import User from '../models/userModel.js'
+import Payment from '../models/payment.model.js'
 import { razorpay } from '../server.js'
 import Apperror from '../utility/error.util.js'
  import crypto from 'crypto'
@@ -26,11 +27,16 @@ const buySubscription = async (req, res ,next) =>  {
         
         const subscription = await razorpay.subscriptions.create({
             plan_id:process.env.RAZORPAY_PLAN_ID,
-            customer_notify :1 
+            customer_notify :1 ,
+            total_count :12 // 12 means it will charge every month for oner year subscription
+
         })
         user.subscription.id = subscription.id
-        user.subscription.status = subscription.status
-        await user.save()
+        user.subscription.status = subscription.status 
+        console.log(user);
+
+        await user.save() 
+
         return res.status(200).json({
             success :true, 
             message : "Suscribed Successfully ",
@@ -60,18 +66,22 @@ const verifySubscription = async (req, res ,next) =>  {
 
             // If the signature we have generated via razorpay is not equal to that of we 
             // Have got in req.body 
-            // Then it must be an Error 
+            // Then it must be an Error  
+            console.log("-=-=-=-=----------------------=-=-=-=")
             if(generatedSignature !== razorpay_signature ) {
-                 return next("Payment not verified, please try again , 500")
-
+                return next ( new Apperror("Payment not verified, please try again " ,500))
+                
             }
-            await Payment.create({
+            console.log("-=-=-=-=----------------------=-=-=-=")
+            await   Payment.create({
                 razorpay_payment_id ,
                 razorpay_signature ,
                 razorpay_subscription_id 
             })
             user.subscription.status  ="active" 
             await user.save() 
+            
+            console.log("-=-=-=-=----------------------=-=-=-=")
             return res.status(200).json({
                 success:true, 
                 message : "Payment  Verified Successfully    "
@@ -99,11 +109,15 @@ const cancelSubscription = async (req, res ,next) =>  {
         const subscription = await razorpay.subscriptions.cancel(
             subscriptionid
         )
-    
+        console.log(subscription)
         user.subscription.status = subscription.staus 
-        await user.save() 
+        await user.save()  
+        return res.status(200).json ( {
+            success: true, 
+            message : "Subscription cancelled Successfully"
+        })
     } catch (error) {
-        return next(new Apperror(error.message) ,400) 
+        return next(new Apperror(error.message  ,400) ) 
 
     }
 

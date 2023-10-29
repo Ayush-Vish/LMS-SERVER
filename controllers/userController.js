@@ -164,7 +164,8 @@ const me = async (req, res, next) => {
     const userFind = await userModel.find({ _id: userId });
     res.status(200).json({
       success: true,
-      message: userFind,
+      message: "Data fetched Successfully",
+      user: userFind
     });
   } catch (error) {
     next(new Apperror("Unable to get User Details"));
@@ -268,41 +269,48 @@ const changePassword = async (req, res, next) => {
   }
 };
 const updateUser = async (req, res, next) => {
-  const { name } = req.body;
-  const { id } = req.user.id;
-  const user = await userModel.findById(id);
-  if (!user) {
-    return next(new Apperror("User Does not Exists", 400));
-  }
-  if (req.name) {
-    user.name = name;
-  }
-  if (req.file) {
-    await cloudinary.v2.destroy(user.avatar.public_id);
-    try {
-      const result = await cloudinary.v2.uploader.upload(req.file.path, {
-        folder: "lms",
-        width: "250",
-        height: "250",
-        gravity: "face",
-        crop: "fill",
-      });
-      if (result) {
-        user.avatar.public_id = result.public_id;
-        user.avatar.secure_url = result.secure_url;
-
-        // Also we should remove file from local System in the upload folder
-        fs.rm(`uploads/${req.file.filename}`);
-      }
-    } catch (error) {
-      return next(new Apperror(error || "File not uploaded Successfully"), 500);
+  try {
+    console.log(req.user) 
+    console.log(req.body);
+    const { name } = req.body;
+    const id = req.user.id;
+    console.log(id)
+    const user = await userModel.findById(id);
+    if (!user) {
+      return next(new Apperror("User Does not Exists", 400));
     }
+    user.name = name;
+
+    if (req.file) {
+      try {
+        const result = await cloudinary.v2.uploader.upload(req.file.path, {
+          folder: "lms",
+          width: "250",
+          height: "250",
+          gravity: "face",
+          crop: "fill",
+        });
+        if (result) { 
+          user.avatar.public_id = result.public_id;
+          user.avatar.secure_url = result.secure_url;
+  
+          // Also we should remove file from local System in the upload folder
+          fs.rm(`uploads/${req.file.filename}`);
+        }
+      } catch (error) {
+        return next(new Apperror(error || "File not uploaded Successfully"), 500);
+      }
+    }
+    await user.save();
+    return res.status(200).json({
+      user,
+      success: true,
+      message: "Info Updated Successfully",
+    });
+  } catch (error) {
+      return next(new Apperror(error.message ,400))
   }
-  await user.save();
-  return res.status(200).json({
-    success: true,
-    message: "Info Updated Successfully",
-  });
+  
 };
 
 export default {
@@ -313,5 +321,6 @@ export default {
   forgotPassword,
   resetPassword,
   changePassword,
-  updateUser,
+  updateUser, 
+  
 };

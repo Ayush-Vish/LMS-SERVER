@@ -1,3 +1,4 @@
+import courseModel from '../models/course.model.js'
 import Course from '../models/course.model.js'
 import Apperror from '../utility/error.util.js'
 import AppError from '../utility/error.util.js'
@@ -127,6 +128,7 @@ const removeCourse = async (req ,res, next) => {
 const addlectures =async (req , res, next) => { 
 
     try {
+        console.log("fjbskjfbsjkfbsdkfbsdkl")
         const {title , description } = req.body 
         const {id} = req.params;
         const course  =await Course.findById(id)
@@ -137,21 +139,25 @@ const addlectures =async (req , res, next) => {
             title,description, 
             lecture:{}
         }
+        console.log("fjbskjfbsjkfbsdkfbsdkl")
+        console.log(req.file)
         if(req.file) {
             try {
-                const result =  await cloudinary.v2.uploader.upload(req.file.path,  {
-                    folder:'lms'
+                const result =  await cloudinary.v2.uploader.upload(req.file.path, {
+                    resource_type: "video", 
                 })
+                console.log(result);
+                console.log(req.file);
+
                 if(result) {
-                    let n = course.lectures.length
+                    
                     lectureData.lecture.public_id = result.public_id
                     lectureData.lecture.secure_url = result.secure_url
-
                 }
-                console.log(req.file.filename)
-                fs.rm(`uploads/${req.file.filename}`)
                 
             } catch (error) {
+                console.log(error);
+
                 return next( new Apperror (error.message , 400))
                 
             }
@@ -171,12 +177,38 @@ const addlectures =async (req , res, next) => {
     }
 
 
- }
+ } 
+
+
+
+const deleteLecture = async  (req ,res, next ) => { 
+    try {
+        const { lid , cid}  = req.params;
+        const course=  await courseModel.findById(cid) ;
+        if(!course) { 
+            return next(new Apperror("Course does not exists" ,400 )) ;
+        }  
+        console.log(course.lectures.length)
+        course.lectures = course.lectures.filter((e)=>  {  
+            return e._id !=lid;
+        }) 
+        await course.save() ;
+        return res.status(200).json({
+            success: true, 
+            message :"Course deleted Successfully"
+        })
+        
+
+    } catch (error) {
+        return next(new AppError ( error.message ,400 ))
+    }
+}
 export {
     getAllCourses,
     getLecturesByCourseId,
     createCourse,
     updateCourse,
     removeCourse,
-    addlectures
+    addlectures, 
+    deleteLecture
 }

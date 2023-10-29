@@ -1,16 +1,10 @@
 import path from 'path'
 import multer from 'multer'
 const upload  = multer({
-    dest:"uploads/",
-    limits:{fileSize : 1024* 1024 *50},
-    storage:multer.diskStorage({
-        destination:'uploads/',
-        filename:(_req ,file ,cb) =>{
-            cb(null,file.originalname)
-        },
-
-    }),
+    limits:{fileSize : 1024* 1024 *5000},
+    storage:multer.diskStorage({}),
     fileFilter: (_req , file , cb ) => {
+        console.log("dkasbkjasbfjasflnas")
         let ext =   path.extname (file.originalname)
         if(
             ext !== '.jpg' &&
@@ -18,11 +12,12 @@ const upload  = multer({
             ext !== '.wepg' &&
             ext !== '.png' &&
             ext !== '.mp4'
-
-        ) {
-            cb(new Error(`Unsupported File Format ${ext}` )  ,false)
-            return 
-        }
+            
+            ) {
+                cb(new Error(`Unsupported File Format ${ext}` )  ,false)
+                return 
+            }
+            console.log("dkasbkjasbfjasflnas")
         cb(null , true)
     },
 })
