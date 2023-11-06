@@ -1,2 +1,2 @@
-# Learning Management System (lms) 🚀
-Learning management system ṣ  
+# Learning Management System (lms) 🚀 
+
