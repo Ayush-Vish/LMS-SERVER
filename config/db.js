@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 // were not specified in our schema do not get saved to the db
 mongoose.set('strictQuery' , false) 
 const connectToDB = async ()=>{
-    await mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/" )
+    await mongoose.connect(process.env.MONGO_URI)
         .then((conn) =>{
             console.log("Connected to Database:" + conn.connection.host)
 
