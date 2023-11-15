@@ -1,6 +1,6 @@
 import User from '../models/userModel.js'
 import Payment from '../models/payment.model.js'
-import { razorpay } from '../server.js'
+import { razorpay } from '../index.js'
 import Apperror from '../utility/error.util.js'
  import crypto from 'crypto'
 const getRazorpayKey = async (req, res ,next) =>  {     
