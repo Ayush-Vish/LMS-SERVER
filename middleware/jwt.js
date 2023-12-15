@@ -2,6 +2,7 @@ import  JWT  from "jsonwebtoken";
 // Basically we have to take cookie from request or in header
 // And that is called as Token 
 const jwtAuth  =(req,res,next) => {
+    console.log(req.cookies.token)
     const token = (req.cookies && req.cookies.token) || null
 
     if(!token)  {
