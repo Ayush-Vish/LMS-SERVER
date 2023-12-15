@@ -1,7 +1,7 @@
 import Razorpay from 'razorpay'
 import app from './app.js'
 import cloudinary from 'cloudinary'
-const PORT = process.env.PORT || 5001
+const PORT = process.env.PORT 
 const HOSTNAME=process.env.HOSTNAME
 cloudinary.v2.config({
     cloud_name:process.env.CLOUDINARY_CLOUD_NAME,

@@ -3,6 +3,7 @@ import Payment from '../models/payment.model.js'
 import { razorpay } from '../index.js'
 import Apperror from '../utility/error.util.js'
  import crypto from 'crypto'
+import userModel from '../models/userModel.js'
 const getRazorpayKey = async (req, res ,next) =>  {     
 
     return res.status(200).json({
@@ -33,7 +34,6 @@ const buySubscription = async (req, res ,next) =>  {
         })
         user.subscription.id = subscription.id
         user.subscription.status = subscription.status 
-        console.log(user);
 
         await user.save() 
 
@@ -67,12 +67,10 @@ const verifySubscription = async (req, res ,next) =>  {
             // If the signature we have generated via razorpay is not equal to that of we 
             // Have got in req.body 
             // Then it must be an Error  
-            console.log("-=-=-=-=----------------------=-=-=-=")
             if(generatedSignature !== razorpay_signature ) {
                 return next ( new Apperror("Payment not verified, please try again " ,500))
                 
             }
-            console.log("-=-=-=-=----------------------=-=-=-=")
             await   Payment.create({
                 razorpay_payment_id ,
                 razorpay_signature ,
@@ -81,7 +79,7 @@ const verifySubscription = async (req, res ,next) =>  {
             user.subscription.status  ="active" 
             await user.save() 
             
-            console.log("-=-=-=-=----------------------=-=-=-=")
+
             return res.status(200).json({
                 success:true, 
                 message : "Payment  Verified Successfully    "
@@ -109,7 +107,6 @@ const cancelSubscription = async (req, res ,next) =>  {
         const subscription = await razorpay.subscriptions.cancel(
             subscriptionid
         )
-        console.log(subscription)
         user.subscription.status = subscription.staus 
         await user.save()  
         return res.status(200).json ( {
@@ -128,24 +125,58 @@ const cancelSubscription = async (req, res ,next) =>  {
 const allPayments = async (req, res ,next) =>  {
     const {count}  =req.query
     const subscriptions = await razorpay.subscriptions.all({
-        count : count || 10 
+        count : count || 10
     })
-    const numberOfUserRegistered = (await User.find()).length
-    console.log(numberOfUserRegistered)
+    const total = subscriptions.count
+
+
+    function extractMonthlySales(records) {
+        const monthlySales = Array(12).fill(0);
+    
+        records.forEach(record => {
+            const createdAtTimestamp = record.created_at;
+            const createdAtDate = new Date(createdAtTimestamp * 1000);
+            const month = createdAtDate.getMonth();
+    
+            monthlySales[month] += record.total_count;
+        });
+    
+        return monthlySales;
+    }
+    const monthlySalesData = extractMonthlySales(subscriptions.items)
+
+    console.log("dfnbsdkjfbsjkdbfk")
     return res.status(200).json({
         success:true, 
         message : "Successfully retieved Payments", 
-        subscriptions,
-        numberOfUserRegistered : numberOfUserRegistered
+        monthlySalesData,
+        total 
         
     })
 
+}
+
+const getUserRecords = async (req ,res , next )=> {
+    try {
+        const noOfUser = await userModel.find().countDocuments()
+        const noOfActiveSubsCription = await razorpay.subscriptions.all({});
+        const noOfActiveSubsCriptionCount = noOfActiveSubsCription.count
+        return res.status(200).json({
+            success:true, 
+            message : "Successfully retieved Payments", 
+            noOfUser,
+            noOfActiveSubsCriptionCount
+        })
+    } catch (error) {
+        return next(new Apperror(error.message , 400))
+    }
 }
 export default { 
     getRazorpayKey,
     buySubscription ,
     verifySubscription,
     cancelSubscription, 
-    allPayments
+    allPayments, 
+    getUserRecords
 }
 

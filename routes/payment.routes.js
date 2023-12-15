@@ -28,6 +28,8 @@ router.route('/')
             jwtAuth,
             payment.allPayments
         )
+router.route("/stats/user" )
+        .get(jwtAuth , authorizedRole("ADMIN") , payment.getUserRecords)
 
 
 export default router

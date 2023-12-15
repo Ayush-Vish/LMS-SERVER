@@ -30,7 +30,7 @@ import userRoutes from './routes/userRoutes.js'
 app.use('/api/v1/user', userRoutes);
 
 import courseRoutes from './routes/course.routes.js'
-app.use('/api/v1/courses' , courseRoutes)
+app.use('/api/v1/courses/' , courseRoutes)
 
 // For making payments Route 
 import paymentRoutes from './routes/payment.routes.js'

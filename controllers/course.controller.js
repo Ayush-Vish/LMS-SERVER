@@ -3,7 +3,7 @@ import Course from '../models/course.model.js'
 import Apperror from '../utility/error.util.js'
 import AppError from '../utility/error.util.js'
 import cloudinary from 'cloudinary'
-import fs from 'fs/promises'
+
 
 const getAllCourses = async(req ,res, next ) => {
     try {
@@ -127,19 +127,19 @@ const removeCourse = async (req ,res, next) => {
 const addlectures =async (req , res, next) => { 
 
     try {
+        console.log("askkbskjfbsdjfjsnfksnsfksd")
         console.log("fjbskjfbsjkfbsdkfbsdkl")
         const {title , description } = req.body 
         const {id} = req.params;
         const course  =await Course.findById(id)
         if(!course ) {
-            return next(new AppError("Course Does Not Exists ") ,500)
+            return next(new AppError("Course Does Not Exists " , 400) )
         }
         const lectureData =   {
             title,description, 
             lecture:{}
         }
-        console.log("fjbskjfbsjkfbsdkfbsdkl")
-        console.log(req.file)
+
         if(req.file) {
             try {
                 const result =  await cloudinary.v2.uploader.upload(req.file.path, {
